@@ -1,0 +1,112 @@
+﻿@page
+@model Parth_practical2.CreateModel
+
+@{
+    ViewData["Title"] = "Create";
+}
+<div class="row border mt-5 p-4 card">
+<h1>Create Product</h1>
+
+<hr />
+
+    
+        <form method="post" enctype="multipart/form-data">
+            <div class="row">
+             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Product.Name" class="control-label"></label>
+                <input asp-for="Product.Name" class="form-control" />
+                <span asp-validation-for="Product.Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Product.Description" class="control-label"></label>
+                <textarea asp-for="Product.Description" class="form-control"> </textarea>
+                <span asp-validation-for="Product.Description" class="text-danger"></span>
+            </div>
+         
+            <div class="form-group col-md-6">
+                <label asp-for="Product.Price" class="control-label"></label>
+                <input asp-for="Product.Price" class="form-control" />
+                <span asp-validation-for="Product.Price" class="text-danger"></span>
+            </div>
+            <div class="form-group col-md-6">
+                <label asp-for="Product.Quantity" class="control-label"></label>
+                <input asp-for="Product.Quantity" class="form-control" />
+                <span asp-validation-for="Product.Quantity" class="text-danger"></span>
+            </div>
+            
+            <div class="form-group col-md-6">
+                <label  class="control-label">Image</label>
+                <input type="file" id="upload" name="file" class="form-control" />
+                <span asp-validation-for="Product.Imageurl" class="text-danger"></span>
+            </div>
+            <div class="form-group col-md-6">
+                <label a class="control-label">Category</label>
+                  <select asp-for="Product.CategoryId" class="form-control" asp-items="ViewBag.CategoryId">
+                <option disabled selected>--Select Category--</option>
+                </select>
+               @* <select multiple name="category" id="valueChange" onsubmit="submitValues()" class="form-select" asp-items="ViewBag.CategoryId">
+                    <option selected value="All">--Select Category--</option>
+
+                    @foreach (var item in @ViewBag.CategoryId)
+                    {
+                        <option value="@item">@item</option>
+                    }
+                </select>*@
+             
+                <span asp-validation-for="Product.CategoryId" class="text-danger"></span>
+            </div>
+            <div class="form-group form-check" >
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="Product.IsActive" /> @Html.DisplayNameFor(model => model.Product.IsActive)
+                </label>
+            </div><br />
+
+
+
+            <div class="form-group mb-2 col-md-3">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+            <div col-md-3>
+                <a asp-page="Index">Back to List</a>
+            </div>
+        </div>
+           
+        </form>
+   
+</div>
+
+
+@*<script>
+    function submitValues() {
+        var selectedValues = [];
+        $('#valueChange option:selected').each(function () {
+            selectedValues.push($(this).val());
+        });
+
+        $.ajax({
+            url: '/ControllerName/ActionName',
+            type: 'POST',
+            data: { values: selectedValues },
+            success: function (result) {
+                // Handle success
+            },
+            error: function (error) {
+                // Handle error
+            }
+        });
+    }
+</script>*@
+
+
+
+<style>
+    .form-check {
+        padding-left:2.5rem;
+    }
+</style>
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

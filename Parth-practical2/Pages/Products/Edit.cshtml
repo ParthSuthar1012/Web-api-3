@@ -1,0 +1,85 @@
+﻿@page
+@model Parth_practical2.EditModel
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+
+<div class="row border d-flex mt-5 p-4 card">
+   
+  
+        <h1>Edit Product</h1>
+    <hr />
+    <div class="d-flex" >
+    <form method="post" enctype="multipart/form-data">
+        <div class="row">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Product.productId" />
+            <input asp-for="Product.Imageurl" hidden class="form-control" />
+            <div class="form-group">
+                <label asp-for="Product.Name" class="control-label"></label>
+                <input asp-for="Product.Name" class="form-control" />
+                <span asp-validation-for="Product.Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Product.Description" class="control-label"></label>
+                <textarea asp-for="Product.Description" class="form-control"> </textarea>
+                <span asp-validation-for="Product.Description" class="text-danger"></span>
+            </div>
+
+            <div class="form-group col-md-6">
+                <label asp-for="Product.Price" class="control-label"></label>
+                <input asp-for="Product.Price" class="form-control" />
+                <span asp-validation-for="Product.Price" class="text-danger"></span>
+            </div>
+            <div class="form-group col-md-6">
+                <label asp-for="Product.Quantity" class="control-label"></label>
+                <input asp-for="Product.Quantity" class="form-control" />
+                <span asp-validation-for="Product.Quantity" class="text-danger"></span>
+            </div>
+                <div class="form-group">
+                    <label asp-for="Product.CreatedOn" class="control-label"></label>
+                    <input asp-for="Product.CreatedOn" class="form-control" readonly />
+                    <span asp-validation-for="Product.CreatedOn" class="text-danger"></span>
+                </div>
+
+                <div class="form-group col-md-6">
+                <label class="control-label">Image</label>
+                <input type="file" id="upload" name="file" class="form-control" />
+                <span asp-validation-for="Product.Imageurl" class="text-danger"></span>
+            </div>
+            <div class="form-group col-md-6">
+                <label a class="control-label">Category</label>
+                <select asp-for="Product.CategoryId" class="form-control" asp-items="ViewBag.CategoryId">
+                    <option disabled selected>--Select Category--</option>
+                </select>
+                <span asp-validation-for="Product.CategoryId" class="text-danger"></span>
+            </div>
+            <div class="form-group form-check mb-2">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="Product.IsActive" /> @Html.DisplayNameFor(model => model.Product.IsActive)
+                </label>
+            </div>
+
+            <div class="col-md-3">
+                <input type="submit" value="Save" class="btn btn-primary" />
+                <a asp-page="Index">Back to List</a>
+            </div></div>
+        </form>
+        <div class="m-4">
+            <img src="@Model.Product.Imageurl" width="80%" style="border-radius:5px; border:0.5px solid #bbb9b6" />
+        </div>
+        </div>
+        
+    </div>
+        
+        
+          
+
+   
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

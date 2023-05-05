@@ -1,0 +1,28 @@
+html {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+    margin-bottom: 60px;
+    background: rgb(88, 150, 150);
+}
+
+.form-add {
+    margin-top: 80px;
+    width: 500px;
+    box-shadow: 10px 10px 20px rgb(9, 94, 116);
+    padding: 20px;
+    border-radius: 10px;
+    background-color: whitesmoke;
+}
