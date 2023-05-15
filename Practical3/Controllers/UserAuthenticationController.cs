@@ -7,8 +7,9 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using practical1.Models.Models;
 
-namespace L___R_Api___Jwt__.Controllers
+namespace Practical3.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -30,7 +31,7 @@ namespace L___R_Api___Jwt__.Controllers
         {
             var userExists = await _userManager.FindByNameAsync(model.Username);
             if (userExists != null)
-                return StatusCode(StatusCodes.Status500InternalServerError, "User with this username already exists!");
+            { return StatusCode(StatusCodes.Status500InternalServerError, "User with this username already exists!"); }
 
             IdentityUser user = new()
             {
@@ -39,10 +40,10 @@ namespace L___R_Api___Jwt__.Controllers
                 UserName = model.Username
             };
             var result = await _userManager.CreateAsync(user, model.Password);
-            if (!result.Succeeded)
-                return StatusCode(StatusCodes.Status500InternalServerError, "Failed to create user, please try again.");
+           
 
-            return Ok("User created successfully.");
+            return StatusCode(StatusCodes.Status201Created,
+                          new Responce { Status = "Success", Message = "User Created Successfully" });
         }
 
 

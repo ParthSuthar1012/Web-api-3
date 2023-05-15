@@ -11,6 +11,8 @@
         IOrderRepository orderRepository { get; }
 
         IOrderItemRepository orderItemRepository { get; }
+
+        IEmpolyeeRepository empolyeeRepository { get; }
         void Save();
     }
 }

@@ -15,6 +15,7 @@ namespace Repository.Repository
             productRepository = new ProdductRepository(_context);
             orderRepository = new OrderRepository(_context);
             orderItemRepository = new OrderItemRepository(_context);
+            empolyeeRepository = new EmpolyeeRepository(_context);
         }
 
         public ICategoryRepository CategoryRepository { get; private set; }
@@ -23,7 +24,7 @@ namespace Repository.Repository
         public IOrderRepository orderRepository { get; private set; }
         public IOrderItemRepository orderItemRepository { get; private set; }
 
-
+        public IEmpolyeeRepository empolyeeRepository { get; private set; }
 
         public void Save()
         {
