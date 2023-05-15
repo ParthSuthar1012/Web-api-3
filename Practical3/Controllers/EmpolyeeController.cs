@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using practical1.Models;
 using practical1.Models.Models;
@@ -18,6 +19,8 @@ namespace Practical3.Controllers
         }
 
         [HttpGet]
+        [Route("GetAllEmployee")]
+        [Authorize]
         public IActionResult GetAllEmployee()
         {
             var employee = _unitOfWork.empolyeeRepository.GetAll();
