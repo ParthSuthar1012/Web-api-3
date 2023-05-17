@@ -19,7 +19,7 @@ namespace Practical3.Controllers
         }
 
         [HttpGet]
-        [Route("GetAllEmployee")]
+        [Route("GetAll")]
         [Authorize]
         public IActionResult GetAllEmployee()
         {
@@ -29,6 +29,7 @@ namespace Practical3.Controllers
         }
 
         [HttpPost]
+        [Route("Create")]
         public IActionResult AddEmpolyee([FromBody] Empolyee empolyee)
         {
             _unitOfWork.empolyeeRepository.Add(empolyee);
