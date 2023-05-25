@@ -37,5 +37,18 @@ namespace Practical3.Controllers
             return StatusCode(StatusCodes.Status201Created,
                            new Responce { Status = "Success", Message = "Empolyee Added Successfully" });
         }
+
+        [HttpGet]
+        [Route("Get/{id}")]
+        public IActionResult GetEmployee(int id)
+        {
+            var employee = _unitOfWork.empolyeeRepository.GetFirstOrDefault(a => a.Id == id);
+
+            if(employee == null)
+            {
+                return NotFound();
+            }
+            return Ok(employee);
+        }
     }
 }

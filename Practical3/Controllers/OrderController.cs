@@ -8,6 +8,8 @@ using practical1.Models.ViewModel;
 using Repository.Repository;
 using Repository.Repository.IRepository;
 using System.Linq;
+using System.Text.Json.Serialization;
+using System.Text.Json;
 
 namespace Practical3.Controllers
 {
@@ -102,15 +104,34 @@ namespace Practical3.Controllers
 
         [HttpGet]
         [Route("GetById")]
-        [Authorize]
+      
         public IActionResult GetBy(int id)
         {
-            var oraderdata = _unitOfWork.orderRepository.GetFirstOrDefault(a => a.OrderId == id);
-            if (oraderdata == null)
+            //var oraderdata = _unitOfWork.orderRepository.GetFirstOrDefault(a => a.OrderId == id);
+            //if (oraderdata == null)
+            //{
+            //    return NotFound();
+            //}
+            //return Ok(oraderdata);
+
+            var order = _unitOfWork.orderItemRepository.GetAll(includeProperties: "OrderItem,OrderItem.product")
+                              .FirstOrDefault(o => o.OrderId == id);
+
+
+            if (order == null)
             {
-                return NotFound();
+                return BadRequest($"Order with id {id} not found");
             }
-            return Ok(oraderdata);
+
+            // Convert OrderItems into JSON
+            var options = new JsonSerializerOptions
+            {
+                ReferenceHandler = ReferenceHandler.Preserve,
+                MaxDepth = 64
+            };
+            var json = JsonSerializer.Serialize(order, options);
+
+            return Ok(json);
         }
 
         [HttpGet]

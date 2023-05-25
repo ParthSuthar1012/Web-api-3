@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using pracical1.dataAccess;
 
@@ -10,9 +11,10 @@ using pracical1.dataAccess;
 namespace pracical1.dataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230525052047_change")]
+    partial class change
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -361,27 +363,6 @@ namespace pracical1.dataAccess.Migrations
                     b.ToTable("orders");
                 });
 
-            modelBuilder.Entity("practical1.Models.orderAddress", b =>
-                {
-                    b.Property<int>("orderAddressId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    b.Property<int>("AddressId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("OrderId")
-                        .HasColumnType("int");
-
-                    b.HasKey("orderAddressId");
-
-                    b.HasIndex("AddressId");
-
-                    b.HasIndex("OrderId");
-
-                    b.ToTable("orderAddresses");
-                });
-
             modelBuilder.Entity("practical1.Models.OrderItem", b =>
                 {
                     b.Property<int>("OrderItemId")
@@ -507,25 +488,6 @@ namespace pracical1.dataAccess.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("practical1.Models.orderAddress", b =>
-                {
-                    b.HasOne("practical1.Models.address", "address")
-                        .WithMany()
-                        .HasForeignKey("AddressId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("practical1.Models.Order", "Orders")
-                        .WithMany()
-                        .HasForeignKey("OrderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Orders");
-
-                    b.Navigation("address");
                 });
 
             modelBuilder.Entity("practical1.Models.OrderItem", b =>

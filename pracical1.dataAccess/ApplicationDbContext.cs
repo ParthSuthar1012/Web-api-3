@@ -21,6 +21,10 @@ namespace pracical1.dataAccess
 
         public DbSet<Empolyee> empolyees { get; set; }
 
+        public DbSet<address> addresses { get; set; }
+
+        public DbSet<orderAddress> orderAddresses { get; set; }
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);

@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using pracical1.dataAccess;
 
@@ -10,9 +11,10 @@ using pracical1.dataAccess;
 namespace pracical1.dataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230525051407_adding_address")]
+    partial class adding_address
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -213,7 +215,7 @@ namespace pracical1.dataAccess.Migrations
 
             modelBuilder.Entity("practical1.Models.address", b =>
                 {
-                    b.Property<int>("AddressId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
@@ -248,7 +250,7 @@ namespace pracical1.dataAccess.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.HasKey("AddressId");
+                    b.HasKey("Id");
 
                     b.ToTable("addresses");
                 });
@@ -359,27 +361,6 @@ namespace pracical1.dataAccess.Migrations
                     b.HasKey("OrderId");
 
                     b.ToTable("orders");
-                });
-
-            modelBuilder.Entity("practical1.Models.orderAddress", b =>
-                {
-                    b.Property<int>("orderAddressId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    b.Property<int>("AddressId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("OrderId")
-                        .HasColumnType("int");
-
-                    b.HasKey("orderAddressId");
-
-                    b.HasIndex("AddressId");
-
-                    b.HasIndex("OrderId");
-
-                    b.ToTable("orderAddresses");
                 });
 
             modelBuilder.Entity("practical1.Models.OrderItem", b =>
@@ -507,25 +488,6 @@ namespace pracical1.dataAccess.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("practical1.Models.orderAddress", b =>
-                {
-                    b.HasOne("practical1.Models.address", "address")
-                        .WithMany()
-                        .HasForeignKey("AddressId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("practical1.Models.Order", "Orders")
-                        .WithMany()
-                        .HasForeignKey("OrderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Orders");
-
-                    b.Navigation("address");
                 });
 
             modelBuilder.Entity("practical1.Models.OrderItem", b =>

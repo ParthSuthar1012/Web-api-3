@@ -28,8 +28,6 @@ namespace Repository.Repository
                 objFromDb.Phone = obj.Phone;
                 objFromDb.Email = obj.Email;
                 objFromDb.Department = obj.Department;
-     
-  
             }
         }
     }
