@@ -33,7 +33,7 @@ namespace Exam4
             {
                 string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
                 var filterOptions = JsonConvert.DeserializeObject<filteroptions>(requestBody);
-                // Calculate the default date range
+                
                 DateTime startDate;
                 DateTime endDate;
 
@@ -58,35 +58,25 @@ namespace Exam4
 
                 var query = _context.orderAddresses
                      .Include(o => o.Orders)
-                     .ThenInclude(oi => oi.OrderItems)
-                     .ThenInclude(oip => oip.product)
-                     .Include(o => o.address);
-                     //.Where(o => o.Orders.OrderDate >= filterOptions.StartDate && o.Orders.OrderDate <= filterOptions.EndDate);
+                     .ThenInclude(oi => oi.OrderItems).ThenInclude(op => op.product)
+                     .Include(o => o.address)
+                     .Where(o => o.Orders.OrderDate >= filterOptions.StartDate && o.Orders.OrderDate <= filterOptions.EndDate);
 
-                // Apply filters based on the provided filter options
-                //if (!string.IsNullOrEmpty(filterOptions.CustomerName))
-                //    query = query.Where(o => o.Orders.CustomerName.Contains(filterOptions.CustomerName));
+                if (filterOptions.Status != null)
+                    query = query.Where(o => o.Orders.StatusType.ToString() == filterOptions.Status);
 
-                //if (!string.IsNullOrEmpty(filterOptions.CustomerEmail))
-                //    query = query.Where(o => o.Orders.CustomerEmail.Contains(filterOptions.CustomerEmail));
+                if (filterOptions.CustomerSearch != null)
+                    query = query.Where(o => o.Orders.CustomerName.ToLower().Contains(filterOptions.CustomerSearch.ToLower()) || o.Orders.CustomerEmail.ToLower().Contains(filterOptions.CustomerSearch.ToLower()));
 
-                //if (filterOptions.IsActive == null)
-                //    query = query.Where(o => o.Orders.IsActive == filterOptions.IsActive);
+             
 
-                //if (filterOptions.Status == null)
-                //    query = query.Where(o => o.Orders.StatusType == filterOptions.Status);
-
-                //if (filterOptions.ProductIds != null && filterOptions.ProductIds.Any())
-                //    query = query.Where(o => o.Orders.OrderItems.Any(oi => filterOptions.ProductIds.Contains(oi.ProductId)));
-
-                // Retrieve the orders from the database
                 var order = await query.ToListAsync();
 
-                // Map the orders to the response model
+                
                 List<OrderRes> orderResponses = order.Select(oa => new OrderRes
                 {
                     OrderId = oa.OrderId,
-                    Description = oa.Orders.OrderItems.,
+                    
                     CustomerName = oa.Orders.CustomerName,
                     CustomerEmail = oa.Orders.CustomerEmail,
                     Status = oa.Orders.StatusType.ToString(),

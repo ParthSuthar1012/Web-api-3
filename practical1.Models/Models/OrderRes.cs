@@ -9,7 +9,7 @@ namespace practical1.Models.Models
     public class OrderRes
     {
         public int OrderId { get; set; }
-        public string Description { get; set; }
+ 
         public string CustomerName { get; set; }
         public string CustomerEmail { get; set; }
         public string Status { get; set; }
