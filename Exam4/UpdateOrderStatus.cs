@@ -24,15 +24,21 @@ namespace Exam4
         }
         [FunctionName("UpdateOrderStatus")]
         public  async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "Order/{orderId}/status/{statusType}")] HttpRequest req, string orderId,
-        string statusType
+            [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "UpdateOrderStatus")] HttpRequest req
+     
            )
         {
             
                 try
                 {
-                   
-                    if (!int.TryParse(orderId, out int orderIdInt))
+
+                string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
+                dynamic data = JsonConvert.DeserializeObject(requestBody);
+
+                string orderId = data.orderId;
+                string statusType = data.statusType;
+
+                if (!int.TryParse(orderId, out int orderIdInt))
                     {
                         return new BadRequestObjectResult("Invalid orderId");
                     }

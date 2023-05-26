@@ -15,7 +15,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Practical3", "Practical3\Pr
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Utilitys", "SD\Utilitys.csproj", "{6AD5DDF6-C8C6-4214-8366-2BBA53452202}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Exam4", "Exam4\Exam4.csproj", "{F173681E-0C5C-4BCF-828C-0E2DF724BC16}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Exam4", "Exam4\Exam4.csproj", "{F173681E-0C5C-4BCF-828C-0E2DF724BC16}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

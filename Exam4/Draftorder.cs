@@ -103,7 +103,7 @@ namespace Exam4
                     return new NotFoundObjectResult($"Address with ID {orders.AddressId} not found");
                 }
 
-                // Create an order address linking the order and the address
+             
                 var orderAddress = new orderAddress
                 {
                     Orders = order,
@@ -114,7 +114,7 @@ namespace Exam4
 
                 await _context.SaveChangesAsync();
 
-                return new OkObjectResult($"Order with id {order.OrderId} added successfully");
+                return new OkResult();
             }
             catch (Exception ex)
             {

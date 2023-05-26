@@ -26,35 +26,66 @@ namespace Exam4
         }
         [FunctionName("GetOrder")]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "GetOrder")] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = "GetOrder")] HttpRequest req,
             ILogger log)
         {
             try
             {
+
+                if(req.Method == HttpMethods.Get)
+                {
+                    DateTime startDate;
+                    DateTime endDate;
+
+                    DateTime today = DateTime.Today;
+                    if (today.Day < 5)
+                    {
+                        startDate = today.AddMonths(-1);
+                        endDate = today.AddDays(-1);
+                    }
+                    else
+                    {
+                        startDate = new DateTime(today.Year, today.Month, 1);
+                        endDate = today.AddDays(1);
+                    }
+
+                    var neworder = _context.orderAddresses
+               .Include(o => o.Orders)
+               .ThenInclude(oi => oi.OrderItems)
+               .Include(o => o.address)
+               .Where(o => o.Orders.OrderDate >= startDate && o.Orders.OrderDate <= endDate);
+
+                    var  Order = await neworder.ToListAsync();
+
+
+
+                    List<OrderRes> OrderResponses = Order.Select(oa => new OrderRes
+                    {
+                        OrderId = oa.OrderId,
+                        Description = oa.Orders.Note,
+                        CustomerName = oa.Orders.CustomerName,
+                        CustomerEmail = oa.Orders.CustomerEmail,
+                        Status = oa.Orders.StatusType.ToString(),
+                        TotalItems = oa.Orders.OrderItems.Count,
+                        TotalAmount = oa.Orders.TotalAmount,
+                        ShippingAddress = $"{oa.address.Address}, {oa.address.city}, {oa.address.state}, {oa.address.country}-{oa.address.zipcode}"
+                    }).ToList();
+
+                    return new OkObjectResult(OrderResponses);
+
+                }
                 string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
+
                 var filterOptions = JsonConvert.DeserializeObject<filteroptions>(requestBody);
                 
-                DateTime startDate;
-                DateTime endDate;
-
-                DateTime today = DateTime.Today;
-                if (today.Day < 5)
-                {
-                    startDate = today.AddMonths(-1);
-                    endDate = today.AddDays(-1);
-                }
-                else
-                {
-                    startDate = new DateTime(today.Year, today.Month, 1);
-                    endDate = today;
-                }
+            
 
                 // Apply the date range filter
-                if (filterOptions.StartDate == default)
-                    filterOptions.StartDate = startDate;
+                //if (filterOptions.StartDate == default)
+                //    filterOptions.StartDate = startDate;
 
-                if (filterOptions.EndDate == default)
-                    filterOptions.EndDate = endDate;
+                //if (filterOptions.EndDate == default)
+                //    filterOptions.EndDate = endDate;
 
                 var query = _context.orderAddresses
                      .Include(o => o.Orders)
