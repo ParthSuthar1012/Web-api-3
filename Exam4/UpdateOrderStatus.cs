@@ -48,6 +48,9 @@ namespace Exam4
                         return new BadRequestObjectResult("Invalid statusType");
                     }
 
+
+           
+
                     Order order = GetOrderById(orderIdInt);
 
                     if (order == null)
@@ -55,11 +58,21 @@ namespace Exam4
                         return new NotFoundObjectResult($"Order with ID {orderId} not found");
                     }
 
-                    order.StatusType = parsedStatusType;
+                if (order.IsActive == false)
+                {
+                    return new BadRequestObjectResult($"Order with id {order.OrderId} is inactive. Cannot change");
+                }
+
+                if (order.StatusType == Status.Paid)
+                {
+                    return new BadRequestObjectResult($"Order with id {order.OrderId} already paid. Cannot change the status to {statusType}");
+                }
+
+                order.StatusType = parsedStatusType;
 
                 SaveOrder(order);
 
-                    return new OkObjectResult("Order status updated successfully!");
+                    return new OkObjectResult(order);
                 }
                 catch (Exception ex)
                 {

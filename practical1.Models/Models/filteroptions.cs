@@ -8,12 +8,12 @@ namespace practical1.Models.Models
 {
     public class filteroptions
     {
-          public DateTime StartDate { get; set; } 
-        public DateTime EndDate { get; set; } 
-    public string CustomerSearch { get; set; }
-    
-    public bool IsActive { get; set; }
-    public string Status { get; set; }
-    public List<int> ProductIds { get; set; }
+        public DateTime FirstDate { get; set; }
+        public DateTime LastDate { get; set; }
+        public string CustomerName { get; set; }
+        public string CustomerEmail { get; set; }
+        public bool IsActive { get; set; }
+        public string status { get; set; }
+        public List<int> ProductIds { get; set; }
     }
 }

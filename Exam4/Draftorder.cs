@@ -95,7 +95,7 @@ namespace Exam4
 
                 _context.orders.Add(order);
 
-                // Retrieve the selected address from the address table
+               
                 var address = await _context.addresses.FirstOrDefaultAsync(a => a.AddressId == orders.AddressId);
 
                 if (address == null)

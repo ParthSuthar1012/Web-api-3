@@ -31,32 +31,38 @@ namespace Exam4
             try
             {
                 string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-                var Req = JsonConvert.DeserializeObject<orderAddress>(requestBody);
-                orderAddress OrderAddress = await _context.orderAddresses.FindAsync(id);
+                dynamic data = JsonConvert.DeserializeObject(requestBody);
+                int AddressId = data.AddressId;
+                var order = await _context.orders.FirstOrDefaultAsync(a => a.OrderId == id);
+              
+                orderAddress OrderAddress = await _context.orderAddresses.FirstOrDefaultAsync(a => a.OrderId == id);
                 if (OrderAddress == null)
                 {
-                    return new NotFoundObjectResult($"OrderAddress with orderAddressId {id} not found");
+                    return new NotFoundObjectResult($"OrderAddress with orderAddressId {OrderAddress.orderAddressId} not found");
                 }
 
-                var order = await _context.orders.FindAsync(Req.OrderId);
+                
                 if(order == null){
-                    return new NotFoundObjectResult($"order with id {Req.OrderId} not found");
+                    return new NotFoundObjectResult($"order with id {order.OrderId} not found");
                 }
-
-                var address = await _context.addresses.FindAsync(Req.AddressId);
+                if (order.StatusType == Status.Shipped )
+                {
+                    return new BadRequestObjectResult("Order is Shhipped Can not chnage address");
+                }
+                var address = await _context.addresses.FirstOrDefaultAsync( a => a.AddressId == AddressId);
                 if (address == null)
                 {
-                    return new NotFoundObjectResult($"address with id {Req.AddressId} not found");
+                    return new NotFoundObjectResult($"address with id {data.AddressId} not found");
                 }
 
                 // Update the orderId and addressId
-                OrderAddress.OrderId = Req.OrderId; ;
-                OrderAddress.AddressId = Req.AddressId;
+                //OrderAddress.OrderId = Req.OrderId; 
+                OrderAddress.AddressId = data.AddressId;
 
                  _context.orderAddresses.Update(OrderAddress);
                 await _context.SaveChangesAsync();
 
-                return new OkObjectResult("OrderAddress updated successfully!");
+                return new OkObjectResult(OrderAddress);
             }
             catch (Exception ex)
             {

@@ -32,91 +32,118 @@ namespace Exam4
             try
             {
 
-                if(req.Method == HttpMethods.Get)
+                // if(req.Method == HttpMethods.Get)
+                // {
+                //     DateTime startDate;
+                //     DateTime endDate;
+
+                //     DateTime today = DateTime.Today;
+                //     if (today.Day < 5)
+                //     {
+                //         startDate = today.AddMonths(-1);
+                //         endDate = today.AddDays(-1);
+                //     }
+                //     else
+                //     {
+                //         startDate = new DateTime(today.Year, today.Month, 1);
+                //         endDate = today.AddDays(1);
+                //     }
+
+                //     var neworder = _context.orderAddresses
+                //.Include(o => o.Orders)
+                //.ThenInclude(oi => oi.OrderItems)
+                //.Include(o => o.address)
+                //.Where(o => o.Orders.OrderDate >= startDate && o.Orders.OrderDate <= endDate);
+
+                //     var  Order = await neworder.ToListAsync();
+
+
+
+                //     List<OrderRes> OrderResponses = Order.Select(oa => new OrderRes
+                //     {
+                //         OrderId = oa.OrderId,
+                //         Description = oa.Orders.Note,
+                //         CustomerName = oa.Orders.CustomerName,
+                //         CustomerEmail = oa.Orders.CustomerEmail,
+                //         Status = oa.Orders.StatusType.ToString(),
+                //         TotalItems = oa.Orders.OrderItems.Count,
+                //         TotalAmount = oa.Orders.TotalAmount,
+                //         ShippingAddress = $"{oa.address.Address}, {oa.address.city}, {oa.address.state}, {oa.address.country}-{oa.address.zipcode}"
+                //     }).ToList();
+
+                //     return new OkObjectResult(OrderResponses);
+
+                // }
+                string customSearch = req.Query["customSearch"];
+                string status = req.Query["statustype"];
+                string IsActive = req.Query["IsActive"];
+                string Product = req.Query["Product"];
+
+                string requestData = await new StreamReader(req.Body).ReadToEndAsync();
+                var data = JsonConvert.DeserializeObject<filteroptions>(requestData);
+                dynamic Data = JsonConvert.DeserializeObject(requestData);
+                customSearch = customSearch ?? Data?.customSearch;
+                status = status ?? Data?.status;
+                IsActive = IsActive ?? Data?.IsActive;
+
+
+
+                DateTime startDate;
+                DateTime endDate;
+
+                DateTime today = DateTime.Today;
+                if (today.Day < 5)
                 {
-                    DateTime startDate;
-                    DateTime endDate;
-
-                    DateTime today = DateTime.Today;
-                    if (today.Day < 5)
-                    {
-                        startDate = today.AddMonths(-1);
-                        endDate = today.AddDays(-1);
-                    }
-                    else
-                    {
-                        startDate = new DateTime(today.Year, today.Month, 1);
-                        endDate = today.AddDays(1);
-                    }
-
-                    var neworder = _context.orderAddresses
-               .Include(o => o.Orders)
-               .ThenInclude(oi => oi.OrderItems)
-               .Include(o => o.address)
-               .Where(o => o.Orders.OrderDate >= startDate && o.Orders.OrderDate <= endDate);
-
-                    var  Order = await neworder.ToListAsync();
-
-
-
-                    List<OrderRes> OrderResponses = Order.Select(oa => new OrderRes
-                    {
-                        OrderId = oa.OrderId,
-                        Description = oa.Orders.Note,
-                        CustomerName = oa.Orders.CustomerName,
-                        CustomerEmail = oa.Orders.CustomerEmail,
-                        Status = oa.Orders.StatusType.ToString(),
-                        TotalItems = oa.Orders.OrderItems.Count,
-                        TotalAmount = oa.Orders.TotalAmount,
-                        ShippingAddress = $"{oa.address.Address}, {oa.address.city}, {oa.address.state}, {oa.address.country}-{oa.address.zipcode}"
-                    }).ToList();
-
-                    return new OkObjectResult(OrderResponses);
-
+                    startDate = today.AddMonths(-1);
+                    endDate = today.AddDays(-1);
                 }
-                string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
+                else
+                {
+                    startDate = new DateTime(today.Year, today.Month, 1);
+                    endDate = today.AddDays(1);
+                }
 
-                var filterOptions = JsonConvert.DeserializeObject<filteroptions>(requestBody);
-                
-            
 
-                // Apply the date range filter
-                //if (filterOptions.StartDate == default)
-                //    filterOptions.StartDate = startDate;
+               
 
-                //if (filterOptions.EndDate == default)
-                //    filterOptions.EndDate = endDate;
 
                 var query = _context.orderAddresses
-                     .Include(o => o.Orders)
-                     .ThenInclude(oi => oi.OrderItems).ThenInclude(op => op.product)
-                     .Include(o => o.address)
-                     .Where(o => o.Orders.OrderDate >= filterOptions.StartDate && o.Orders.OrderDate <= filterOptions.EndDate);
+                       .Include(o => o.Orders)
+                       .ThenInclude(oi => oi.OrderItems).ThenInclude(op => op.product)
+                       .Include(o => o.address)
+                       .Where(o => o.Orders.OrderDate >= startDate && o.Orders.OrderDate <= endDate).ToList();
 
-                if (filterOptions.Status != null)
-                    query = query.Where(o => o.Orders.StatusType.ToString() == filterOptions.Status);
 
-                if (filterOptions.CustomerSearch != null)
-                    query = query.Where(o => o.Orders.CustomerName.ToLower().Contains(filterOptions.CustomerSearch.ToLower()) || o.Orders.CustomerEmail.ToLower().Contains(filterOptions.CustomerSearch.ToLower()));
-
-             
-
-                var order = await query.ToListAsync();
-
-                
-                List<OrderRes> orderResponses = order.Select(oa => new OrderRes
+                if (IsActive != null)
                 {
-                    OrderId = oa.OrderId,
-                    
-                    CustomerName = oa.Orders.CustomerName,
-                    CustomerEmail = oa.Orders.CustomerEmail,
-                    Status = oa.Orders.StatusType.ToString(),
-                    TotalItems = oa.Orders.OrderItems.Count,
-                    TotalAmount = oa.Orders.TotalAmount,
-                    ShippingAddress = $"{oa.address.Address}, {oa.address.city}, {oa.address.state}, {oa.address.country}-{oa.address.zipcode}"
-                }).ToList();
+                    query = _context.orderAddresses.Where(u => u.Orders.IsActive.ToString() == IsActive.ToLower()).ToList();
 
-                return new OkObjectResult(orderResponses);
+                }
+                if (status != null)
+                {
+                    query = (List<orderAddress>)query.Where(o => o.Orders.StatusType.ToString() == data.status).ToList();
+
+                }
+                if (!string.IsNullOrEmpty(customSearch))
+                {
+                    query = _context.orderAddresses.Where(u => u.Orders.CustomerName.ToLower() == customSearch.ToLower() || u.Orders.CustomerEmail.ToLower().Contains(customSearch.ToLower())).ToList();
+
+                }
+
+              
+
+                List<OrderRes> OrderResponses = query.Select(oa => new OrderRes
+                  {
+                       OrderId = oa.OrderId,
+                     Description = oa.Orders.Note,
+                      CustomerName = oa.Orders.CustomerName,
+                      CustomerEmail = oa.Orders.CustomerEmail,
+                     Status = oa.Orders.StatusType.ToString(),
+                    TotalItems = oa.Orders.OrderItems.Count,
+                       TotalAmount = oa.Orders.TotalAmount,
+                       ShippingAddress = $"{oa.address.Address}, {oa.address.city}, {oa.address.state}, {oa.address.country}-{oa.address.zipcode}"
+                    }).ToList();
+                return new OkObjectResult(OrderResponses);
             }
             catch (Exception ex)
             {
