@@ -48,7 +48,7 @@ namespace Exam4
                         return new BadRequestObjectResult("Invalid statusType");
                     }
 
-
+               
            
 
                     Order order = GetOrderById(orderIdInt);
@@ -57,6 +57,12 @@ namespace Exam4
                     {
                         return new NotFoundObjectResult($"Order with ID {orderId} not found");
                     }
+                if (parsedStatusType == Status.Draft)
+                {
+                    if (order.StatusType == Status.Paid || order.StatusType == Status.Shipped) {
+                        return new BadRequestObjectResult($"Order is may be Shipped. Cannot chnage Status to {statusType}");
+                    }
+                }
 
                 if (order.IsActive == false)
                 {
@@ -69,8 +75,8 @@ namespace Exam4
                 }
 
                 order.StatusType = parsedStatusType;
-
-                SaveOrder(order);
+                order.ModifiedOn = DateTime.Now;
+                await SaveOrder(order);
 
                     return new OkObjectResult(order);
                 }
@@ -90,7 +96,7 @@ namespace Exam4
             private  async Task SaveOrder(Order order)
             {
                 _context.orders.Update(order);
-            _context.SaveChangesAsync();
+                await  _context.SaveChangesAsync();
             }
 
 

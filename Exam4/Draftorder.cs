@@ -13,6 +13,7 @@ using practical1.Models;
 using pracical1.dataAccess;
 using practical1.Models.ViewModel;
 using System.Collections.Generic;
+using Microsoft.VisualBasic;
 
 namespace Exam4
 {
@@ -96,22 +97,41 @@ namespace Exam4
                 _context.orders.Add(order);
 
                
-                var address = await _context.addresses.FirstOrDefaultAsync(a => a.AddressId == orders.AddressId);
+                var Shippingaddress = await _context.addresses.FirstOrDefaultAsync(a => a.AddressId == orders.ShippingAddresId);
+                var Billingaddress = await _context.addresses.FirstOrDefaultAsync(a => a.AddressId == orders.BillingAddressId);
 
-                if (address == null)
+                if (Shippingaddress == null)
                 {
-                    return new NotFoundObjectResult($"Address with ID {orders.AddressId} not found");
+                    return new NotFoundObjectResult($"Address with ID {orders.ShippingAddresId} not found");
+                }
+                if(Shippingaddress.addresstype != addresstype.Shipping)
+                {
+                    return new BadRequestObjectResult($"{orders.ShippingAddresId} is not shipping Address");
                 }
 
-             
-                var orderAddress = new orderAddress
+                if (Billingaddress.addresstype != addresstype.Billiing)
+                {
+                    return new BadRequestObjectResult($"{orders.BillingAddressId} is not shipping Address");
+                }
+
+                if (Billingaddress == null)
+                {
+                    return new NotFoundObjectResult($"Address with ID {orders.BillingAddressId} not found");
+                }
+
+
+                var ShipAddress = new orderAddress
                 {
                     Orders = order,
-                    address = address,
+                    address = Shippingaddress,
                 };
-
-                _context.orderAddresses.Add(orderAddress);
-
+                var BillAddress = new orderAddress
+                {
+                    Orders = order,
+                    address = Billingaddress,
+                };
+                _context.orderAddresses.Add(ShipAddress);
+                _context.orderAddresses.Add(BillAddress);
                 await _context.SaveChangesAsync();
 
                 return new OkResult();

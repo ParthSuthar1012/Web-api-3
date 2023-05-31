@@ -16,6 +16,7 @@ namespace practical1.Models.ViewModel
         public ICollection<OrderItemVm> orderItems { get; set; }
 
 
-        public int AddressId { get; set; }
+        public int BillingAddressId { get; set; }
+        public int ShippingAddresId { get; set; }
     }
 }

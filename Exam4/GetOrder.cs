@@ -32,96 +32,66 @@ namespace Exam4
             try
             {
 
-                // if(req.Method == HttpMethods.Get)
-                // {
-                //     DateTime startDate;
-                //     DateTime endDate;
-
-                //     DateTime today = DateTime.Today;
-                //     if (today.Day < 5)
-                //     {
-                //         startDate = today.AddMonths(-1);
-                //         endDate = today.AddDays(-1);
-                //     }
-                //     else
-                //     {
-                //         startDate = new DateTime(today.Year, today.Month, 1);
-                //         endDate = today.AddDays(1);
-                //     }
-
-                //     var neworder = _context.orderAddresses
-                //.Include(o => o.Orders)
-                //.ThenInclude(oi => oi.OrderItems)
-                //.Include(o => o.address)
-                //.Where(o => o.Orders.OrderDate >= startDate && o.Orders.OrderDate <= endDate);
-
-                //     var  Order = await neworder.ToListAsync();
-
-
-
-                //     List<OrderRes> OrderResponses = Order.Select(oa => new OrderRes
-                //     {
-                //         OrderId = oa.OrderId,
-                //         Description = oa.Orders.Note,
-                //         CustomerName = oa.Orders.CustomerName,
-                //         CustomerEmail = oa.Orders.CustomerEmail,
-                //         Status = oa.Orders.StatusType.ToString(),
-                //         TotalItems = oa.Orders.OrderItems.Count,
-                //         TotalAmount = oa.Orders.TotalAmount,
-                //         ShippingAddress = $"{oa.address.Address}, {oa.address.city}, {oa.address.state}, {oa.address.country}-{oa.address.zipcode}"
-                //     }).ToList();
-
-                //     return new OkObjectResult(OrderResponses);
-
-                // }
+               
                 string customSearch = req.Query["customSearch"];
                 string status = req.Query["statustype"];
-                string IsActive = req.Query["IsActive"];
+                string isActive = req.Query["isActive"];
                 string Product = req.Query["Product"];
+                string startDateFilter = req.Query["startDate"];
+                string endDateFilter = req.Query["endDate"];
 
                 string requestData = await new StreamReader(req.Body).ReadToEndAsync();
-                var data = JsonConvert.DeserializeObject<filteroptions>(requestData);
+                //var data = JsonConvert.DeserializeObject<filteroptions>(requestData);
                 dynamic Data = JsonConvert.DeserializeObject(requestData);
                 customSearch = customSearch ?? Data?.customSearch;
                 status = status ?? Data?.status;
-                IsActive = IsActive ?? Data?.IsActive;
-
-
+                isActive = isActive?? Data?.isActive;
+                Product = Product ?? Data?.Product;
+                startDateFilter = startDateFilter ?? Data?.startDate;
+                endDateFilter = endDateFilter ?? Data?.endDate;
 
                 DateTime startDate;
                 DateTime endDate;
 
-                DateTime today = DateTime.Today;
-                if (today.Day < 5)
+                if (!string.IsNullOrEmpty(startDateFilter) && !string.IsNullOrEmpty(endDateFilter))
                 {
-                    startDate = today.AddMonths(-1);
-                    endDate = today.AddDays(-1);
+                    startDate = DateTime.Parse(startDateFilter);
+                    endDate = DateTime.Parse(endDateFilter);
                 }
                 else
                 {
-                    startDate = new DateTime(today.Year, today.Month, 1);
-                    endDate = today.AddDays(1);
+                    DateTime today = DateTime.Today;
+                    if (today.Day < 5)
+                    {
+                        startDate = today.AddMonths(-1);
+                        endDate = today.AddDays(-1);
+                    }
+                    else
+                    {
+                        startDate = new DateTime(today.Year, today.Month, 1);
+                        endDate = today.AddDays(1);
+                    }
                 }
 
 
-               
+
 
 
                 var query = _context.orderAddresses
                        .Include(o => o.Orders)
-                       .ThenInclude(oi => oi.OrderItems).ThenInclude(op => op.product)
+                       .ThenInclude(oi => oi.OrderItems).ThenInclude(a => a.product)
                        .Include(o => o.address)
                        .Where(o => o.Orders.OrderDate >= startDate && o.Orders.OrderDate <= endDate).ToList();
 
+                query = query.Where(a => a.address.addresstype == addresstype.Shipping).ToList();
 
-                if (IsActive != null)
+                if (Product != null)
                 {
-                    query = _context.orderAddresses.Where(u => u.Orders.IsActive.ToString() == IsActive.ToLower()).ToList();
-
+                    query = query.Where(o => o.Orders.OrderItems.Any(oi => oi.product.Name.ToLower() == Product.ToLower() )).ToList();
                 }
                 if (status != null)
                 {
-                    query = (List<orderAddress>)query.Where(o => o.Orders.StatusType.ToString() == data.status).ToList();
+                    query = (List<orderAddress>)query.Where(o => o.Orders.StatusType.ToString().ToLower() == status.ToLower()).ToList();
 
                 }
                 if (!string.IsNullOrEmpty(customSearch))
@@ -129,8 +99,13 @@ namespace Exam4
                     query = _context.orderAddresses.Where(u => u.Orders.CustomerName.ToLower() == customSearch.ToLower() || u.Orders.CustomerEmail.ToLower().Contains(customSearch.ToLower())).ToList();
 
                 }
+                if (isActive != null)
+                {
+                    query = _context.orderAddresses.Where(u => u.Orders.IsActive.ToString().ToLower() == isActive.ToLower()).ToList();
 
-              
+                }
+
+
 
                 List<OrderRes> OrderResponses = query.Select(oa => new OrderRes
                   {

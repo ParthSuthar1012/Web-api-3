@@ -30,6 +30,11 @@ namespace Exam4
             {
                 string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
                 var address = JsonConvert.DeserializeObject<address>(requestBody);
+                if (!Enum.IsDefined(typeof(addresstype), address.addresstype))
+                {
+                    return new BadRequestObjectResult("Invalid address type.");
+                }
+
                 _context.addresses.Add(address);
                 _context.SaveChanges();
                 return new CreatedResult("/address", address);
@@ -53,5 +58,7 @@ namespace Exam4
 
             return new OkObjectResult(convertedAddresses);
         }
+
+
     }
 }
