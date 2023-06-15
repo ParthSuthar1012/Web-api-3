@@ -57,17 +57,19 @@ namespace Exam4
                     {
                         return new NotFoundObjectResult($"Order with ID {orderId} not found");
                     }
-                if (parsedStatusType == Status.Draft)
+
+                if (order.IsActive == false)
+                {
+                    return new BadRequestObjectResult($"Order with id {order.OrderId} is inactive. Cannot change");
+                }
+                if (parsedStatusType == Status.Draft || parsedStatusType == Status.Open)
                 {
                     if (order.StatusType == Status.Paid || order.StatusType == Status.Shipped) {
                         return new BadRequestObjectResult($"Order is may be Shipped. Cannot chnage Status to {statusType}");
                     }
                 }
 
-                if (order.IsActive == false)
-                {
-                    return new BadRequestObjectResult($"Order with id {order.OrderId} is inactive. Cannot change");
-                }
+          
 
                 if (order.StatusType == Status.Paid)
                 {
